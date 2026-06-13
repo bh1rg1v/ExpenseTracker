@@ -8,6 +8,35 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Database Context using PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+// If the connection string is in URI format (e.g., postgresql://...), parse it into standard ADO.NET format
+if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+    var host = uri.Host;
+    var port = uri.Port > 0 ? uri.Port : 5432;
+    var database = uri.AbsolutePath.TrimStart('/');
+    
+    var sslMode = "Require";
+    if (uri.Query.Contains("sslmode="))
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(uri.Query, @"sslmode=([^&]+)");
+        if (match.Success)
+        {
+            sslMode = match.Groups[1].Value;
+            if (!string.IsNullOrEmpty(sslMode))
+            {
+                sslMode = char.ToUpper(sslMode[0]) + sslMode.Substring(1);
+            }
+        }
+    }
+    
+    connectionString = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode={sslMode};Trust Server Certificate=true;";
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
