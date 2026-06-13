@@ -5,11 +5,11 @@ using ExpenseTracker.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Database Context using SQLite
+// Add Database Context using PostgreSQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+    options.UseNpgsql(connectionString));
 
 // Add Identity Services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
