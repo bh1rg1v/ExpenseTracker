@@ -1,0 +1,127 @@
+@model IEnumerable<ExpenseTracker.ViewModels.BudgetProgressViewModel>
+@{
+    ViewData["Title"] = "Budgets";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0 text-white"><i class="fa-solid fa-scale-balanced text-primary me-2"></i>Category Budgets</h1>
+            <p class="text-muted small mb-0">Set spending limits and monitor category consumption</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-3 btn-glow-primary text-white">
+            <i class="fa-solid fa-plus me-2"></i>Set Budget Limit
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success-glass alert-dismissible fade show border-0 text-success rounded-3 mb-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5 text-muted glass-panel rounded-3 border border-light border-opacity-10">
+                <i class="fa-solid fa-scale-unbalanced fa-3x mb-3 d-block opacity-50"></i>
+                No category budgets set. Click "Set Budget Limit" to create one.
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                var remaining = item.LimitAmount - item.SpentAmount;
+                var isOver = item.IsOverBudget;
+                var isNear = item.IsNearLimit;
+                
+                string progressClass = "bg-success";
+                string cardBorderClass = "border-opacity-10";
+                
+                if (isOver)
+                {
+                    progressClass = "bg-danger btn-glow-danger";
+                    cardBorderClass = "border-danger border-opacity-30";
+                }
+                else if (isNear)
+                {
+                    progressClass = "bg-warning";
+                    cardBorderClass = "border-warning border-opacity-30";
+                }
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card glass-panel h-100 border @cardBorderClass rounded-3 p-4 hover-lift">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="category-icon-wrapper rounded-3 d-flex align-items-center justify-content-center me-3" 
+                                     style="background-color: @(item.CategoryColor + "20"); width: 45px; height: 45px;">
+                                    <i class="fa-solid @item.CategoryIcon fa-lg" style="color: @item.CategoryColor"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-white mb-1">@item.CategoryName</h5>
+                                    <span class="text-muted small">@item.StartDate.ToString("MMM yyyy")</span>
+                                </div>
+                            </div>
+
+                            <div class="dropdown">
+                                <button class="btn btn-link text-light opacity-50 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-dark-glass border-light border-opacity-10 rounded-3">
+                                    <li>
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.BudgetId">
+                                            <i class="fa-solid fa-pen-to-square me-2 text-warning"></i>Edit Limit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.BudgetId">
+                                            <i class="fa-solid fa-trash-can me-2"></i>Remove
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Progress Section -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between text-light small mb-2">
+                                <span>Spent: <strong class="@(isOver ? "text-danger" : isNear ? "text-warning" : "text-success")">$@item.SpentAmount.ToString("N2")</strong></span>
+                                <span class="text-muted">Limit: $@item.LimitAmount.ToString("N2")</span>
+                            </div>
+                            
+                            <div class="progress bg-dark bg-opacity-40 rounded-pill" style="height: 10px;">
+                                <div class="progress-bar @progressClass rounded-pill" role="progressbar" 
+                                     style="width: @item.ProgressPercentage.ToString("F1")%" 
+                                     aria-valuenow="@item.ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-2.5">
+                                <span class="small text-muted">@item.StartDate.ToString("yyyy-MM-dd") to @item.EndDate.ToString("yyyy-MM-dd")</span>
+                                <span class="badge @(isOver ? "bg-danger-glass text-danger" : isNear ? "bg-warning-glass text-warning" : "bg-success-glass text-success") rounded-pill px-2 py-0.5 small fw-bold">
+                                    @item.ActualPercentage.ToString("F0")% used
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Info Footer -->
+                        <div class="pt-3 border-top border-light border-opacity-10 d-flex justify-content-between align-items-center small">
+                            @if (isOver)
+                            {
+                                <span class="text-danger fw-bold"><i class="fa-solid fa-circle-exclamation me-1"></i>Over budget by $@Math.Abs(remaining).ToString("N2")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Remaining: <strong class="text-white">$@remaining.ToString("N2")</strong></span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

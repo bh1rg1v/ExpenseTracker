@@ -1,0 +1,150 @@
+@model IEnumerable<ExpenseTracker.Models.Transaction>
+@{
+    ViewData["Title"] = "Transactions";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold mb-0 text-white"><i class="fa-solid fa-receipt text-primary me-2"></i>Transactions</h1>
+            <p class="text-muted small mb-0">Record and track your incomes and expenses</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-3 btn-glow-primary text-white">
+            <i class="fa-solid fa-plus me-2"></i>Add Transaction
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success-glass alert-dismissible fade show border-0 text-success rounded-3 mb-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["BudgetWarning"] != null)
+    {
+        <div class="alert alert-warning-glass alert-dismissible fade show border-0 text-warning rounded-3 mb-4 p-3 shadow-sm animate-pulse" role="alert">
+            <div class="d-flex">
+                <i class="fa-solid fa-triangle-exclamation fa-lg me-3 mt-1"></i>
+                <div>
+                    <span class="fw-bold">Budget Notification:</span> @TempData["BudgetWarning"]
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Filtering Panel -->
+    <div class="card glass-panel border-light border-opacity-10 rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                <div class="col-12 col-md-4">
+                    <label class="form-label text-light opacity-75 small">Search Description</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 border-opacity-20 border-light text-light opacity-50"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" name="searchString" value="@ViewData["SearchString"]" class="form-control bg-transparent border-start-0 border-opacity-20 border-light text-light" placeholder="Search keywords..." />
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label text-light opacity-75 small">Type</label>
+                    <select name="typeFilter" class="form-select bg-transparent border-opacity-20 border-light text-light">
+                        <option value="" class="bg-dark text-white">All Types</option>
+                        <option value="Expense" class="bg-dark text-white" selected="@("Expense".Equals(ViewData["TypeFilter"]))">Expense</option>
+                        <option value="Income" class="bg-dark text-white" selected="@("Income".Equals(ViewData["TypeFilter"]))">Income</option>
+                    </select>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <label class="form-label text-light opacity-75 small">Category</label>
+                    <select name="categoryFilter" asp-items="ViewBag.Categories" class="form-select bg-transparent border-opacity-20 border-light text-light">
+                        <option value="" class="bg-dark text-white">All Categories</option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-outline-primary rounded-3 flex-grow-1">
+                        <i class="fa-solid fa-filter me-1"></i>Filter
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-light rounded-3" title="Clear Filters">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card glass-panel border-light border-opacity-10 rounded-3 shadow">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-light">
+                <thead class="bg-dark bg-opacity-20 border-bottom border-light border-opacity-10">
+                    <tr>
+                        <th class="py-3 ps-4 text-muted small text-uppercase tracking-wider">Date</th>
+                        <th class="py-3 text-muted small text-uppercase tracking-wider">Category</th>
+                        <th class="py-3 text-muted small text-uppercase tracking-wider">Description</th>
+                        <th class="py-3 text-muted small text-uppercase tracking-wider text-end">Amount</th>
+                        <th class="py-3 text-muted small text-uppercase tracking-wider text-center" style="width: 80px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="border-0">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fa-solid fa-folder-open fa-2x mb-3 d-block opacity-50"></i>
+                                No transactions found. Click "Add Transaction" to create one.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            var isIncome = item.Category?.Type == "Income";
+                            <tr>
+                                <td class="py-3.5 ps-4 text-nowrap">@item.Date.ToString("yyyy-MM-dd")</td>
+                                <td class="py-3.5">
+                                    <div class="d-flex align-items-center">
+                                        <div class="category-icon-wrapper rounded-3 d-flex align-items-center justify-content-center me-2.5" 
+                                             style="background-color: @(item.Category?.Color + "20"); width: 32px; height: 32px;">
+                                            <i class="fa-solid @(item.Category?.Icon ?? "fa-tags") small" style="color: @item.Category?.Color"></i>
+                                        </div>
+                                        <span class="fw-bold">@item.Category?.Name</span>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 text-muted text-truncate" style="max-width: 250px;">
+                                    @(string.IsNullOrEmpty(item.Description) ? "—" : item.Description)
+                                </td>
+                                <td class="py-3.5 text-end text-nowrap fw-bold @(isIncome ? "text-success" : "text-danger")">
+                                    @(isIncome ? "+" : "-") $@item.Amount.ToString("N2")
+                                </td>
+                                <td class="py-3.5 text-center">
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-light opacity-50 p-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark bg-dark-glass border-light border-opacity-10 rounded-3">
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">
+                                                    <i class="fa-solid fa-pen-to-square me-2 text-warning"></i>Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                                    <i class="fa-solid fa-trash-can me-2"></i>Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

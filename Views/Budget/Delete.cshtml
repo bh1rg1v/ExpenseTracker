@@ -1,0 +1,46 @@
+@model ExpenseTracker.Models.Budget
+@{
+    ViewData["Title"] = "Delete Budget Limit";
+    Layout = "_Layout";
+}
+
+<div class="container py-4" style="max-width: 600px;">
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-light btn-sm rounded-3">
+            <i class="fa-solid fa-arrow-left me-1"></i>Back to List
+        </a>
+        <h1 class="h3 fw-bold text-white mt-3"><i class="fa-solid fa-trash-can text-danger me-2"></i>Remove Budget</h1>
+        <p class="text-muted small">Are you sure you want to remove this budget target?</p>
+    </div>
+
+    <div class="card glass-panel border-light border-opacity-10 rounded-3 p-4 shadow mb-4">
+        <div class="d-flex align-items-center mb-3">
+            <div class="category-icon-wrapper rounded-3 d-flex align-items-center justify-content-center me-3" 
+                 style="background-color: @(Model.Category?.Color + "20"); width: 50px; height: 50px;">
+                <i class="fa-solid @(Model.Category?.Icon ?? "fa-tags") fa-lg" style="color: @Model.Category?.Color"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold text-white mb-1">@Model.Category?.Name Limit</h5>
+                <span class="text-muted small">@Model.StartDate.ToString("yyyy-MM-dd") to @Model.EndDate.ToString("yyyy-MM-dd")</span>
+            </div>
+        </div>
+
+        <hr class="border-light border-opacity-10" />
+
+        <div class="text-light opacity-75 small">
+            <p><strong>Limit Amount:</strong> $@Model.Amount.ToString("N2")</p>
+        </div>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="d-flex gap-3">
+            <a asp-action="Index" class="btn btn-outline-light rounded-3 flex-grow-1 py-2">
+                <i class="fa-solid fa-xmark me-2"></i>Cancel
+            </a>
+            <button type="submit" class="btn btn-danger rounded-3 flex-grow-1 py-2 btn-glow-danger">
+                <i class="fa-solid fa-trash-can me-2"></i>Remove Budget
+            </button>
+        </div>
+    </form>
+</div>

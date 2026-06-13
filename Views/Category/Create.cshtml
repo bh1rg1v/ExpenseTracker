@@ -1,0 +1,117 @@
+@model ExpenseTracker.Models.Category
+@{
+    ViewData["Title"] = "Create Category";
+    Layout = "_Layout";
+
+    var iconPresets = new[] {
+        "fa-wallet", "fa-home", "fa-shopping-basket", "fa-bolt", "fa-car", "fa-film", 
+        "fa-utensils", "fa-heartbeat", "fa-shopping-bag", "fa-tags", "fa-plane", 
+        "fa-book", "fa-gift", "fa-gamepad", "fa-coffee", "fa-briefcase", "fa-laptop-code", "fa-coins"
+    };
+
+    var colorPresets = new[] {
+        "#e63946", "#f4a261", "#457b9d", "#1d3557", "#a8dadc", "#e76f51", 
+        "#e0aaff", "#ff006e", "#9b5de5", "#2ec4b6", "#00b4d8", "#2a9d8f", "#4caf50", "#6c757d"
+    };
+}
+
+<div class="container py-4" style="max-width: 650px;">
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-light btn-sm rounded-3 me-2">
+            <i class="fa-solid fa-arrow-left me-1"></i>Back to List
+        </a>
+        <h1 class="h3 fw-bold text-white mt-3"><i class="fa-solid fa-plus text-primary me-2"></i>Create Category</h1>
+        <p class="text-muted small">Create a new income or expense category</p>
+    </div>
+
+    <div class="card glass-panel border-light border-opacity-10 rounded-3 p-4 shadow">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger-glass small border-0 py-2 px-3 mb-3 text-danger rounded-3" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label text-light opacity-75 small"></label>
+                <input asp-for="Name" class="form-control bg-transparent border-opacity-20 border-light text-light" placeholder="e.g. Subscriptions" />
+                <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Type" class="form-label text-light opacity-75 small"></label>
+                <select asp-for="Type" class="form-select bg-transparent border-opacity-20 border-light text-light">
+                    <option value="Expense" class="bg-dark text-white">Expense</option>
+                    <option value="Income" class="bg-dark text-white">Income</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Icon" class="form-label text-light opacity-75 small">Select Icon</label>
+                <input type="hidden" asp-for="Icon" id="selected-icon" value="fa-tags" />
+                <div class="icon-selector-grid d-flex flex-wrap gap-2 border border-opacity-20 border-light p-3 rounded-3 bg-dark bg-opacity-20">
+                    @foreach (var icon in iconPresets)
+                    {
+                        <button type="button" class="btn btn-outline-light btn-sm icon-btn p-2 @(icon == "fa-tags" ? "active btn-primary text-white" : "")" 
+                                data-icon="@icon" style="width: 40px; height: 40px;" onclick="selectIcon('@icon', this)">
+                            <i class="fa-solid @icon"></i>
+                        </button>
+                    }
+                </div>
+                <span asp-validation-for="Icon" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Color" class="form-label text-light opacity-75 small">Select Color</label>
+                <input type="hidden" asp-for="Color" id="selected-color" value="#6c757d" />
+                <div class="color-selector-grid d-flex flex-wrap gap-2 border border-opacity-20 border-light p-3 rounded-3 bg-dark bg-opacity-20">
+                    @foreach (var color in colorPresets)
+                    {
+                        <button type="button" class="btn color-btn border border-light border-opacity-10" 
+                                data-color="@color" style="background-color: @color; width: 32px; height: 32px; border-radius: 50%;" 
+                                onclick="selectColor('@color', this)">
+                            <i class="fa-solid fa-check text-white d-none"></i>
+                        </button>
+                    }
+                </div>
+                <span asp-validation-for="Color" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 btn-glow-primary text-white font-weight-bold">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Save Category
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function selectIcon(icon, btn) {
+            document.getElementById('selected-icon').value = icon;
+            document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active', 'btn-primary', 'text-white'));
+            btn.classList.add('active', 'btn-primary', 'text-white');
+        }
+
+        function selectColor(color, btn) {
+            document.getElementById('selected-color').value = color;
+            document.querySelectorAll('.color-btn').forEach(b => {
+                b.querySelector('i').classList.add('d-none');
+                b.style.transform = 'none';
+            });
+            btn.querySelector('i').classList.remove('d-none');
+            btn.style.transform = 'scale(1.15)';
+        }
+
+        // Initialize selectors
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialIcon = document.getElementById('selected-icon').value;
+            const iconBtn = document.querySelector(`.icon-btn[data-icon="${initialIcon}"]`);
+            if (iconBtn) iconBtn.classList.add('active', 'btn-primary', 'text-white');
+
+            const initialColor = document.getElementById('selected-color').value;
+            const colorBtn = document.querySelector(`.color-btn[data-color="${initialColor}"]`);
+            if (colorBtn) {
+                colorBtn.querySelector('i').classList.remove('d-none');
+                colorBtn.style.transform = 'scale(1.15)';
+            }
+        });
+    </script>
+}

@@ -1,0 +1,69 @@
+@model ExpenseTracker.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<div class="auth-wrapper d-flex align-items-center justify-content-center min-vh-100">
+    <div class="auth-card glass-panel p-5 rounded-4 shadow-lg border border-opacity-10 border-light w-100" style="max-width: 480px;">
+        <div class="text-center mb-4">
+            <div class="brand-logo mb-2">
+                <i class="fa-solid fa-user-plus fa-3x text-primary-gradient"></i>
+            </div>
+            <h2 class="fw-bold tracking-tight">Create Account</h2>
+            <p class="text-muted small">Start tracking your income and expenses today</p>
+        </div>
+
+        <form asp-controller="Account" asp-action="Register" method="post" autocomplete="off">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger-glass small border-0 py-2 px-3 mb-3 text-danger rounded-3" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label text-light opacity-75 small"></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 border-opacity-20 border-light text-light opacity-50"><i class="fa-solid fa-user"></i></span>
+                    <input asp-for="FullName" class="form-control bg-transparent border-start-0 border-opacity-20 border-light text-light" placeholder="John Doe" />
+                </div>
+                <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label text-light opacity-75 small"></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 border-opacity-20 border-light text-light opacity-50"><i class="fa-solid fa-envelope"></i></span>
+                    <input asp-for="Email" class="form-control bg-transparent border-start-0 border-opacity-20 border-light text-light" placeholder="name@example.com" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label text-light opacity-75 small"></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 border-opacity-20 border-light text-light opacity-50"><i class="fa-solid fa-lock"></i></span>
+                    <input asp-for="Password" class="form-control bg-transparent border-start-0 border-opacity-20 border-light text-light" placeholder="••••••••" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label text-light opacity-75 small"></label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 border-opacity-20 border-light text-light opacity-50"><i class="fa-solid fa-circle-check"></i></span>
+                    <input asp-for="ConfirmPassword" class="form-control bg-transparent border-start-0 border-opacity-20 border-light text-light" placeholder="••••••••" />
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 btn-glow-primary text-white font-weight-bold">
+                <i class="fa-solid fa-user-plus me-2"></i>Sign Up
+            </button>
+        </form>
+
+        <div class="text-center mt-4 pt-2 border-top border-light border-opacity-10">
+            <p class="text-muted small mb-0">Already have an account? <a asp-controller="Account" asp-action="Login" class="text-primary text-decoration-none fw-bold">Sign In</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,27 @@
+# [NEW] .gitignore
+
+# Compilation outputs
+**/bin/
+**/obj/
+
+# Local databases (SQLite)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# Local .NET SDK
+.dotnet-sdk/
+dotnet-install.ps1
+
+# Visual Studio / VS Code configuration
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS specific files
+.DS_Store
+Thumbs.db

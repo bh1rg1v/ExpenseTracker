@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_Layout";
+}
+
+<div class="auth-wrapper d-flex align-items-center justify-content-center min-vh-100">
+    <div class="auth-card glass-panel p-5 rounded-4 shadow-lg border border-opacity-10 border-light w-100 text-center" style="max-width: 500px;">
+        <div class="mb-4">
+            <i class="fa-solid fa-triangle-exclamation fa-4x text-danger animate-pulse"></i>
+        </div>
+        <h1 class="fw-bold text-danger mb-3">Access Denied</h1>
+        <p class="text-light opacity-75 mb-4">You do not have the required permissions to view this resource. Please contact an administrator or switch accounts.</p>
+        <div class="d-grid gap-2">
+            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-light rounded-3">
+                <i class="fa-solid fa-house me-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
