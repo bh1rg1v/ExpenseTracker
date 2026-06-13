@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: expense-tracker
+    env: docker
+    plan: free
+    branch: main
+    numInstances: 1
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        value: Data Source=/var/data/expense_tracker.db
