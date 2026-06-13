@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Data;
 using ExpenseTracker.Models;
 
+// Enable legacy timestamp behavior for Npgsql to support DateTimeKind.Unspecified
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Database Context using PostgreSQL
